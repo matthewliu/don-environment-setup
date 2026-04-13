@@ -433,11 +433,7 @@ Claude will start up. Paste this message to it:
 npm install -g pnpm tsx
 ```
 
-**Cursor IDE** -- it will tell you to:
-1. Go to cursor.com in your browser and download the Windows installer
-2. Run the installer
-3. Open Cursor, install the "Remote - WSL" extension
-4. Open your WSL2 projects folder: `File > Open Folder` → type `\\wsl$\Ubuntu\home\don\projects`
+**Cursor IDE** -- see the [Cursor 101](#cursor-101) section below for full install and setup.
 
 **Cloud accounts** -- it will walk you through what to sign up for:
 
@@ -691,6 +687,77 @@ Install these only when a specific project needs them. Ask Claude Code if you're
 - **Ruby** -- only for iOS CocoaPods.
 - **Mobile dev** -- Android Studio, Expo, Xcode.
 - **Heroku, AWS** -- not used.
+
+---
+
+## Cursor 101
+
+Cursor is your code editor -- it's where you'll browse, read, and edit code files. It's based on VS Code but has built-in AI features.
+
+### Install Cursor (Windows)
+
+1. Go to **cursor.com** in your browser
+2. Click **Download for Windows**
+3. Run the installer
+4. Open Cursor when it's done
+
+### Connect Cursor to WSL2
+
+Your code lives in WSL2's Linux filesystem, so Cursor needs to connect to it:
+
+1. Open Cursor
+2. Press **Ctrl+Shift+X** to open the Extensions panel (left sidebar)
+3. Search for `WSL` and install **WSL** (by Microsoft)
+4. Press **Ctrl+Shift+P** to open the Command Palette
+5. Type `WSL: Connect to WSL` and click it
+6. Cursor will reload and connect to your Ubuntu. You'll see **WSL: Ubuntu** in the bottom-left corner.
+7. Now open your projects: **File > Open Folder** → navigate to `/home/don/projects` → click **OK**
+
+**From now on, always connect to WSL first** before opening folders. If you see `WSL: Ubuntu` in the bottom-left, you're connected.
+
+### Install Extensions
+
+Press **Ctrl+Shift+X** to open Extensions, then search for and install each of these:
+
+| Extension | What it does |
+|-----------|-------------|
+| **Python** (Microsoft) | Python syntax, linting, debugging, IntelliSense |
+| **Pylance** (Microsoft) | Fast Python type checking (installs with Python extension) |
+| **ESLint** | JavaScript/TypeScript error checking |
+| **Prettier** | Auto-formats your code to look clean |
+| **Tailwind CSS IntelliSense** | Autocomplete for Tailwind CSS classes |
+| **GitLens** | See who changed each line, browse git history |
+| **Error Lens** | Shows errors inline (next to the code, not just in a panel) |
+| **GitHub Pull Requests** | Create and review PRs from inside Cursor |
+| **Path Intellisense** | Autocompletes file paths when you type |
+
+### Key Cursor Shortcuts
+
+| What | Shortcut |
+|------|----------|
+| Open a file by name | `Ctrl+P` then type the filename |
+| Search across all files | `Ctrl+Shift+F` |
+| Open the terminal inside Cursor | `` Ctrl+` `` (backtick, the key above Tab) |
+| Open Command Palette | `Ctrl+Shift+P` |
+| Go to a line number | `Ctrl+G` |
+| Toggle sidebar | `Ctrl+B` |
+| Split editor (side by side) | `Ctrl+\` |
+| AI chat (Cursor feature) | `Ctrl+L` |
+
+### Configure Prettier to Format on Save
+
+1. Press **Ctrl+Shift+P**
+2. Type `Preferences: Open Settings (JSON)` and click it
+3. Add these lines inside the `{}` braces:
+
+```json
+"editor.formatOnSave": true,
+"editor.defaultFormatter": "esbenp.prettier-vscode"
+```
+
+4. Save the file (**Ctrl+S**)
+
+Now every time you save a file, Prettier will auto-format it.
 
 ---
 

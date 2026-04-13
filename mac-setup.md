@@ -297,19 +297,7 @@ Claude will start up. Paste this message to it:
 npm install -g pnpm tsx
 ```
 
-**Cursor IDE:**
-1. Go to **cursor.com** in your browser
-2. Click **Download for Mac**
-3. Open the downloaded `.dmg` file
-4. Drag **Cursor** into your **Applications** folder
-5. Open Cursor from Applications (or Spotlight: Cmd+Space → type `Cursor`)
-6. If Mac says "Cursor is from an unidentified developer" → go to **System Settings > Privacy & Security** → scroll down → click **Open Anyway**
-7. Inside Cursor, install these extensions (click the Extensions icon in the left sidebar, search for each):
-   - ESLint
-   - Prettier
-   - Tailwind CSS IntelliSense
-   - GitLens
-   - Error Lens
+**Cursor IDE** -- see the [Cursor 101](#cursor-101) section below for full install and setup.
 
 **Cloud accounts:**
 
@@ -609,6 +597,84 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```bash
 sudo xcodebuild -runFirstLaunch
 ```
+
+---
+
+## Cursor 101
+
+Cursor is your code editor -- it's where you'll browse, read, and edit code files. It's based on VS Code but has built-in AI features.
+
+### Install Cursor (Mac)
+
+1. Go to **cursor.com** in your browser
+2. Click **Download for Mac**
+3. Open the downloaded `.dmg` file -- a window appears
+4. Drag the **Cursor** icon into the **Applications** folder
+5. Open Cursor: press **Cmd+Space**, type `Cursor`, press Enter
+6. If Mac says "Cursor can't be opened because it is from an unidentified developer":
+   - Open **System Settings** → **Privacy & Security**
+   - Scroll down until you see a message about Cursor being blocked
+   - Click **Open Anyway**
+   - Try opening Cursor again
+
+### Install Extensions
+
+Press **Cmd+Shift+X** to open Extensions, then search for and install each of these:
+
+| Extension | What it does |
+|-----------|-------------|
+| **Python** (Microsoft) | Python syntax, linting, debugging, IntelliSense |
+| **Pylance** (Microsoft) | Fast Python type checking (installs with Python extension) |
+| **ESLint** | JavaScript/TypeScript error checking |
+| **Prettier** | Auto-formats your code to look clean |
+| **Tailwind CSS IntelliSense** | Autocomplete for Tailwind CSS classes |
+| **GitLens** | See who changed each line, browse git history |
+| **Error Lens** | Shows errors inline (next to the code, not just in a panel) |
+| **GitHub Pull Requests** | Create and review PRs from inside Cursor |
+| **Path Intellisense** | Autocompletes file paths when you type |
+
+### Open a Project in Cursor
+
+1. Open Cursor
+2. **File > Open Folder**
+3. Navigate to your project (e.g., `/Users/yourname/projects/don-environment-setup`)
+4. Click **Open**
+
+Or from Terminal, `cd` into any project folder and type:
+
+```bash
+cursor .
+```
+
+This opens Cursor in that folder. (If this doesn't work, open Cursor → press **Cmd+Shift+P** → type `Shell Command: Install 'cursor' command in PATH` → click it.)
+
+### Key Cursor Shortcuts
+
+| What | Shortcut |
+|------|----------|
+| Open a file by name | `Cmd+P` then type the filename |
+| Search across all files | `Cmd+Shift+F` |
+| Open the terminal inside Cursor | `` Ctrl+` `` (backtick, the key above Tab) |
+| Open Command Palette | `Cmd+Shift+P` |
+| Go to a line number | `Ctrl+G` |
+| Toggle sidebar | `Cmd+B` |
+| Split editor (side by side) | `Cmd+\` |
+| AI chat (Cursor feature) | `Cmd+L` |
+
+### Configure Prettier to Format on Save
+
+1. Press **Cmd+Shift+P**
+2. Type `Preferences: Open Settings (JSON)` and click it
+3. Add these lines inside the `{}` braces:
+
+```json
+"editor.formatOnSave": true,
+"editor.defaultFormatter": "esbenp.prettier-vscode"
+```
+
+4. Save the file (**Cmd+S**)
+
+Now every time you save a file, Prettier will auto-format it.
 
 ---
 
