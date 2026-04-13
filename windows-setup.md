@@ -141,6 +141,20 @@ don@YOURPC:~$
 
 `Ctrl+C` by itself means "cancel the running command" in a terminal, so you need to hold Shift too. You can also right-click anywhere in the terminal to paste from your clipboard. You'll use this constantly when copy-pasting commands from this guide.
 
+**Linux gotchas for Windows users:**
+
+| Gotcha | What it means |
+|--------|--------------|
+| **Case sensitive** | `cd Projects` and `cd projects` are DIFFERENT. File names, commands, everything cares about caps. |
+| **Forward slashes** | Paths use `/` not `\`. It's `/home/don/projects/` not `\home\don\projects\`. |
+| **Hidden files** | Files starting with `.` are invisible. `.bashrc`, `.env`, `.git` won't show with `ls`. Use `ls -a` to see them. |
+| **`sudo`** | Means "run as admin." It asks for YOUR password (the one you just created). |
+| **`~` (tilde)** | Shortcut for your home folder. `~/projects` = `/home/don/projects`. |
+| **Tab to autocomplete** | Press Tab while typing a file/folder name to autocomplete it. Press Tab twice to see all matches. |
+| **Up arrow** | Press up to scroll through your previous commands. Way faster than retyping. |
+| **No undo for `rm`** | `rm` (delete) is permanent. There is no recycle bin. Be careful. |
+| **"command not found"** | Means you need to install something, or restart your terminal. Claude Code can help. |
+
 #### Part C (continued): Update Ubuntu and install build tools
 
 Copy and paste this entire block into the Ubuntu terminal and press Enter:
