@@ -8,24 +8,26 @@ Setting up Windows 11 Home for coding with Claude Code, Cursor, and Matt's toolk
 
 ## The Strategy: Bootstrap, Then Let Claude Do the Rest
 
-You only need to manually install **3 things**:
+You need to manually set up 5 things before Claude Code can take over:
 1. WSL2 (Linux inside Windows)
-2. Node.js
-3. Claude Code
+2. A GitHub account + git configured
+3. Node.js
+4. Claude Code
+5. Clone this repo
 
-That's it. Once Claude Code is running, you clone this repo and tell Claude: "set me up." It reads this guide, checks what's installed, and handles everything else -- git config, GitHub auth, Cursor, Python, databases, API keys, all of it.
+Once Claude Code is running inside this repo, you tell it to read this file and finish the setup for you. It checks what's installed, installs what's missing, and explains everything along the way.
 
 ---
 
 ## Priority Order
 
-### Tier 0: Bootstrap (15 minutes, manual)
-- [WSL2 + Node + Claude Code](#tier-0-bootstrap)
+### Tier 0: Bootstrap (30 minutes, manual -- follow every step)
+- [WSL2 + GitHub + Node + Claude Code + clone this repo](#tier-0-bootstrap)
 
 ### Tier 1: Hand off to Claude
-- [Clone this repo, Claude does the rest](#tier-1-hand-off-to-claude)
+- [Let Claude finish the environment setup](#tier-1-hand-off-to-claude)
 
-### Tier 2: Build real projects (Claude helps when needed)
+### Tier 2: Build real projects (tell Claude when ready)
 - [Python](#7-python--virtual-environments)
 - [PostgreSQL](#8-postgresql)
 - [Codex CLI](#9-codex-cli)
@@ -49,93 +51,242 @@ That's it. Once Claude Code is running, you clone this repo and tell Claude: "se
 
 ## Tier 0: Bootstrap
 
-Do these 3 steps manually. Copy-paste each block into the terminal. After this, Claude takes over.
+Follow these steps in order. Copy-paste the commands exactly. Don't skip anything.
 
-### Step 1: WSL2
+### Step 1: Install WSL2
 
-Open **PowerShell as Administrator** and run:
+WSL2 puts a real Linux (Ubuntu) inside Windows. This is where you'll write code.
+
+1. Click the **Start menu**, type `PowerShell`, right-click **Windows PowerShell**, and choose **Run as administrator**.
+2. Paste this command and press Enter:
 
 ```powershell
 wsl --install
 ```
 
-**Restart your computer.** After restart, Ubuntu opens automatically. It asks for a username and password -- pick a simple lowercase username (no spaces).
+3. **Restart your computer** when it tells you to.
+4. After restart, an Ubuntu window opens automatically. It asks you to create a username and password.
+   - **Username:** pick something short and lowercase, like `don` (no spaces, no capitals)
+   - **Password:** pick something you'll remember. When you type it, nothing shows on screen -- that's normal, just type and press Enter.
+5. You're now at a Linux command prompt. It looks like `don@PCNAME:~$`. This is where you'll work.
 
-Once you're at the Ubuntu prompt, run this one block:
-
-```bash
-sudo apt update && sudo apt upgrade -y && sudo apt install -y build-essential curl wget unzip && mkdir -p ~/projects
-```
-
-### Step 2: Node.js
-
-Still in the Ubuntu terminal:
+Run this to update everything and install basic tools:
 
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash && source ~/.bashrc && nvm install --lts
+sudo apt update && sudo apt upgrade -y && sudo apt install -y build-essential curl wget unzip git
 ```
 
-Verify: `node --version` should print `v22.x` or similar.
+It will ask for your password (the one you just created). Type it and press Enter.
 
-### Step 3: Claude Code
+Create a folder for all your code projects:
 
 ```bash
-npm install -g @anthropic-ai/claude-code && claude --version
+mkdir -p ~/projects
 ```
 
-Now run `claude` -- it will open a browser to log in to your Anthropic account. Once authenticated, you have a coding AI in your terminal.
+**From now on, always use the Ubuntu tab in Windows Terminal for coding.** You can open Windows Terminal from the Start menu -- it has tabs for PowerShell and Ubuntu. Use the Ubuntu tab.
 
-**You're done with manual setup.**
+### Step 2: Understand the WSL2 File System
+
+WSL2 creates a Linux filesystem alongside your Windows filesystem. Here's how they relate:
+
+```
+Windows sees:                         Linux (WSL2) sees:
+C:\Users\Don\Documents\               /mnt/c/Users/Don/Documents/
+C:\Users\Don\Desktop\                 /mnt/c/Users/Don/Desktop/
+
+                                      /home/don/              ← your Linux home folder
+                                      /home/don/projects/     ← where your code lives
+```
+
+**Two key things:**
+- **From Linux**, you can access all your Windows files at `/mnt/c/`. So your Desktop is at `/mnt/c/Users/Don/Desktop/`.
+- **From Windows**, you can browse your Linux files in File Explorer at `\\wsl$\Ubuntu\home\don\`. Just type that into the File Explorer address bar.
+
+**Where should your code live?** In the Linux filesystem (`~/projects/`), not on the Windows drive. Why: the Linux filesystem is much faster for code operations (npm install, git, etc.). Files on `/mnt/c/` are slow because they cross between Windows and Linux on every read/write.
+
+You can still open these files in Windows apps like Cursor -- you just point Cursor at `\\wsl$\Ubuntu\home\don\projects\` and it works.
+
+### Step 3: Set Up Git and Connect to GitHub
+
+You already have a GitHub account. Now you need to connect your terminal to it so you can download and upload code.
+
+Back in the Ubuntu terminal, configure git with your name and the email you used for GitHub:
+
+```bash
+git config --global user.name "Don"
+```
+
+```bash
+git config --global user.email "your-actual-github-email@example.com"
+```
+
+```bash
+git config --global init.defaultBranch main
+```
+
+```bash
+git config --global pull.rebase false
+```
+
+```bash
+git config --global core.autocrlf input
+```
+
+Now install the GitHub CLI and log in:
+
+```bash
+sudo apt install -y gh
+```
+
+If that installs an old version (check with `gh --version` -- you want 2.50+), use this instead:
+
+```bash
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt update && sudo apt install gh
+```
+
+Now log in to GitHub from the terminal:
+
+```bash
+gh auth login
+```
+
+It will ask you questions. Choose these answers:
+- **Where do you use GitHub?** → `GitHub.com`
+- **What is your preferred protocol?** → `HTTPS`
+- **Authenticate Git with your GitHub credentials?** → `Yes`
+- **How would you like to authenticate?** → `Login with a web browser`
+
+It will show you a one-time code (like `ABCD-1234`). Press Enter, and it opens your browser. Paste the code into the browser page, click **Authorize**, and you're connected.
+
+Verify it worked:
+
+```bash
+gh auth status
+```
+
+You should see a green checkmark and your GitHub username.
+
+### Step 4: Install Node.js
+
+Node.js is the runtime for JavaScript. Claude Code and most web tools need it.
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+```
+
+```bash
+source ~/.bashrc
+```
+
+```bash
+nvm install --lts
+```
+
+Verify it worked:
+
+```bash
+node --version
+```
+
+You should see `v22.x.x` or similar. If you see `command not found`, close the terminal, reopen Ubuntu, and try `node --version` again.
+
+### Step 5: Install Claude Code
+
+Claude Code is an AI coding assistant that runs in your terminal. Think of it as a very smart pair programmer.
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+Verify:
+
+```bash
+claude --version
+```
+
+Now start it for the first time:
+
+```bash
+claude
+```
+
+It will open your browser to log in. You need an Anthropic account:
+1. If you don't have one, go to **console.anthropic.com** and sign up
+2. After logging in, the terminal will say you're authenticated
+3. Type `/exit` to quit Claude for now -- we'll start it again in the right folder
+
+### Step 6: Clone This Repo
+
+"Cloning" means downloading a copy of a code project from GitHub to your computer. Run this exact command:
+
+```bash
+cd ~/projects && gh repo clone matthewliu/don-environment-setup
+```
+
+Verify it worked:
+
+```bash
+ls ~/projects/don-environment-setup
+```
+
+You should see `README.md`, `windows-setup.md`, and `mac-setup.md`.
+
+**Tier 0 is complete.** You now have Linux, git, GitHub, Node.js, Claude Code, and this guide on your machine.
 
 ---
 
 ## Tier 1: Hand Off to Claude
 
-Still in WSL2 Ubuntu. Tell Claude to clone this repo and set you up:
+Now start Claude Code inside this repo:
 
 ```bash
-cd ~/projects
-claude
+cd ~/projects/don-environment-setup && claude
 ```
 
-Then paste this into Claude:
+Claude will start up. Paste this message to it:
 
-> Run `sudo apt install -y git gh` then configure git with my name "Don" and email "don@example.com". Then run `gh auth login` so I can authenticate with GitHub. After that, clone matthewliu/don-environment-setup into ~/projects. Then read windows-setup.md and walk me through the rest of the setup -- Cursor IDE, cloud accounts, Windows tweaks, and global npm packages. Check what's already installed and skip anything that's done.
+> Read the file windows-setup.md. I just finished Tier 0 -- WSL2, git, GitHub, Node.js, and Claude Code are installed and working. I'm a beginner. Please do these things for me step by step:
+>
+> 1. Run the Windows tweaks listed in Tier 1 (tell me what to paste into PowerShell as admin)
+> 2. Install the global npm packages listed (pnpm, tsx)
+> 3. Help me pick and download an IDE (Cursor is recommended)
+> 4. Check what's already installed and tell me if anything from Tier 0 needs fixing
+>
+> After that, explain what Tier 2 covers and ask me if I'm ready to continue or want to stop for today.
 
-Claude will handle:
+### What Claude will do:
 
-**Git + GitHub** -- configures git, authenticates `gh`, clones repos.
+**Windows tweaks** -- it will tell you to open PowerShell as Administrator and paste specific commands:
+- Enable long file paths (prevents errors with deeply nested folders)
+- Enable Developer Mode (lets git create symlinks)
 
-**Windows tweaks** -- tells you what to run in PowerShell as Administrator:
-- Enable long file paths (prevents node_modules errors)
-- Enable Developer Mode (for symlinks)
-
-**Cursor IDE** -- tells you to download from cursor.com (Windows app, not WSL2) and install the Remote-WSL extension for opening WSL2 folders.
-
-**Cloud accounts** -- walks you through signing up for what you need:
-
-| Service | URL | Why | Free Tier? |
-|---------|-----|-----|-----------|
-| **GitHub** | github.com | Code hosting, everything | Yes |
-| **Anthropic** | console.anthropic.com | Claude API key (for apps you build) | Pay-as-you-go |
-| **Vercel** | vercel.com | Easiest way to deploy web apps | Yes (hobby) |
-
-**API keys + shell config:**
-```bash
-echo 'export ANTHROPIC_API_KEY="sk-ant-your-key-here"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-**Global npm packages:**
+**npm packages** -- it will run these for you:
 ```bash
 npm install -g pnpm tsx
 ```
 
-### Asking Claude for more
+**Cursor IDE** -- it will tell you to:
+1. Go to cursor.com in your browser and download the Windows installer
+2. Run the installer
+3. Open Cursor, install the "Remote - WSL" extension
+4. Open your WSL2 projects folder: `File > Open Folder` → type `\\wsl$\Ubuntu\home\don\projects`
 
-Once Tier 1 is done, you can ask Claude to set up Tier 2 whenever you're ready:
+**Cloud accounts** -- it will walk you through what to sign up for:
 
-> Read windows-setup.md. Set up Tier 2 for me -- Python, PostgreSQL, Codex CLI, and Railway. Check what's already installed first.
+| Service | URL | Why | Free? |
+|---------|-----|-----|-------|
+| **GitHub** | github.com | Already done in Tier 0 | Yes |
+| **Anthropic** | console.anthropic.com | Already done (Claude Code login) | Pay-as-you-go |
+| **Vercel** | vercel.com | Easiest way to deploy web apps to the internet | Yes (hobby tier) |
+
+### How to set up Tier 2 later
+
+When you're ready to install Python, PostgreSQL, and more, start Claude in this folder again and paste:
+
+> Read windows-setup.md. I finished Tiers 0 and 1. Set up Tier 2 for me -- Python, PostgreSQL, Codex CLI, and Railway. Check what's already installed first and skip anything that's done. Explain what each thing is as you install it.
 
 ---
 
