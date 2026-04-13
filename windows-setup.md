@@ -132,6 +132,15 @@ don@YOURPC:~$
 
 **You're in Linux.** This is your command line. You'll type commands here.
 
+**Important -- copy/paste is different in the terminal:**
+
+| Action | In Windows apps (normal) | In Ubuntu terminal |
+|--------|------------------------|--------------------|
+| Copy | `Ctrl+C` | `Ctrl+Shift+C` |
+| Paste | `Ctrl+V` | `Ctrl+Shift+V` (or just **right-click**) |
+
+`Ctrl+C` by itself means "cancel the running command" in a terminal, so you need to hold Shift too. You can also right-click anywhere in the terminal to paste from your clipboard. You'll use this constantly when copy-pasting commands from this guide.
+
 #### Part C (continued): Update Ubuntu and install build tools
 
 Copy and paste this entire block into the Ubuntu terminal and press Enter:
