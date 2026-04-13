@@ -1,377 +1,672 @@
-# Matt's New Mac Setup
+# Mac Setup Guide
 
-Provisioning a fresh Mac (Apple Silicon) for coding with Claude Code, Cursor, and the claude-toolkit.
-Mirrors the existing environment from the current machine.
+Setting up a fresh Mac (Apple Silicon) for coding with Claude Code, Cursor, and Matt's toolkit.
+Written for someone who has never coded before.
+
+---
+
+## The Strategy: Bootstrap, Then Let Claude Do the Rest
+
+You need to manually set up 5 things:
+1. Xcode Command Line Tools + Homebrew (Mac's package manager)
+2. A GitHub account + git configured
+3. Node.js
+4. Claude Code
+5. Clone the setup repo
+
+Once Claude Code is running inside this repo, you tell it to read this file and finish the setup. It installs everything else for you.
 
 ---
 
 ## Priority Order
 
-### Tier 1: Code TODAY
-- [Xcode CLI + Homebrew](#1-xcode-cli--homebrew)
-- [Git + GitHub](#2-git--github)
-- [Node.js + global packages](#3-nodejs--global-packages)
-- [Claude Code + Codex](#4-claude-code--codex)
-- [Cursor IDE](#5-cursor-ide)
+### Tier 0: Bootstrap (30 minutes, manual -- follow every step)
+- [Xcode + Homebrew + GitHub + Node + Claude Code + clone this repo](#tier-0-bootstrap)
 
-### Tier 2: Full dev environment
-- [Python 3.12](#6-python)
-- [PostgreSQL 16 + Redis + SQLite](#7-databases)
-- [Deployment CLIs](#8-deployment-clis)
-- [Utility CLIs](#9-utility-clis)
+### Tier 1: Hand off to Claude
+- [Let Claude finish the environment setup](#tier-1-hand-off-to-claude)
 
-### Tier 3: Toolkit + specialized
-- [Claude Toolkit deploy](#10-claude-toolkit)
-- [Security tools](#11-security-tools)
-- [Docker](#12-docker)
+### Tier 2: Build real projects (tell Claude when ready)
+- [Python](#7-python)
+- [PostgreSQL](#8-postgresql)
+- [Codex CLI](#9-codex-cli)
+- [Railway CLI](#10-railway-cli)
+- [More cloud accounts](#11-cloud-accounts-tier-2)
 
-### Tier 4: When needed
-- [Rust (Joyride only)](#13-rust)
-- [Ruby + CocoaPods (iOS only)](#14-ruby--ios)
-- [Mobile dev (Expo, Android Studio, Xcode)](#15-mobile-dev)
+### Tier 3: Full stack (when you need it)
+- [Redis](#12-redis)
+- [Docker](#13-docker)
+- [Toolkit setup](#14-claude-toolkit)
+- [Security tools](#15-security-tools)
+- [Utility CLIs](#16-utility-clis)
+
+### Tier 4: Skip for now
+- Rust (only needed for Joyride backend)
+- Ruby (only needed for iOS CocoaPods)
+- Mobile dev (Android Studio, Expo, Xcode)
+- Heroku, AWS (not used)
 
 ---
 
-## Tier 1: Code TODAY
+## Tier 0: Bootstrap
 
-### 1. Xcode CLI + Homebrew
+Follow these steps in order. Don't skip anything.
+
+### Step 1: Open Terminal
+
+Terminal is the app where you type commands. It comes with every Mac.
+
+1. Press **Cmd + Space** to open Spotlight search
+2. Type `Terminal` and press Enter
+3. A white (or black) window appears with a blinking cursor. This is your command line.
+
+**Tip:** Right-click the Terminal icon in your Dock and choose **Options > Keep in Dock** so you can find it easily later.
+
+**Important -- how to run commands from this guide:**
+- Copy a command from this guide (highlight it, then **Cmd+C**)
+- Click inside the Terminal window
+- Paste it (**Cmd+V**)
+- Press **Enter** to run it
+- Wait for it to finish before running the next one. You'll know it's done when you see your prompt again (the `$` or `%` sign with a blinking cursor).
+
+### Step 2: Install Xcode Command Line Tools
+
+These are basic developer tools that almost everything else needs. Paste this into Terminal and press Enter:
 
 ```bash
-# Xcode Command Line Tools (required for almost everything)
 xcode-select --install
+```
 
-# Homebrew
+A popup will appear asking if you want to install the tools. Click **Install**, then **Agree** to the license.
+
+**This takes 5-15 minutes.** A progress bar will show. While it installs, you can read ahead but don't run any more commands until it finishes.
+
+When it's done, you'll see `Install complete` or the Terminal prompt comes back.
+
+### Step 3: Install Homebrew
+
+Homebrew is a package manager for Mac -- it lets you install developer tools with simple commands instead of hunting for downloads. Paste this into Terminal:
+
+```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
-# Add to PATH (Apple Silicon)
+It will ask for your Mac password (the one you use to log in). **When you type it, nothing shows on screen -- no dots, no stars.** That's normal. Just type your password and press Enter.
+
+It may also ask you to press Enter to confirm. Do it.
+
+**This takes 5-10 minutes.** When it finishes, it will print some instructions. The important one is adding Homebrew to your PATH. Run these two commands:
+
+```bash
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+```
+
+```bash
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
-### 2. Git + GitHub
+Verify it worked:
+
+```bash
+brew --version
+```
+
+You should see something like `Homebrew 4.x.x`. If you see `command not found`, close Terminal, reopen it, and try again.
+
+### Step 4: Create a GitHub Account
+
+GitHub is where all code is stored and shared. You need an account.
+
+1. Open Safari (or your browser) and go to **github.com**
+2. Click **Sign up**
+3. Follow the steps -- use your real email, pick a username you like
+4. Verify your email when GitHub sends you a confirmation
+
+**Keep the browser open -- you'll need it in the next step.**
+
+If you already have a GitHub account, skip this step.
+
+### Step 5: Install Git and Connect to GitHub
+
+Back in Terminal, install Git and the GitHub CLI:
 
 ```bash
 brew install git gh
+```
 
-# Configure
-git config --global user.name "Matthew Liu"
-git config --global user.email "your@email.com"
+Now configure git with your name and the email you used for GitHub:
+
+```bash
+git config --global user.name "Your Name"
+```
+
+```bash
+git config --global user.email "your-actual-github-email@example.com"
+```
+
+```bash
 git config --global init.defaultBranch main
-git config --global pull.rebase false
+```
 
-# Authenticate
+```bash
+git config --global pull.rebase false
+```
+
+Now log in to GitHub from the terminal:
+
+```bash
 gh auth login
 ```
 
-### 3. Node.js + Global Packages
+It will ask you questions. Choose these answers:
+- **Where do you use GitHub?** → `GitHub.com`
+- **What is your preferred protocol?** → `HTTPS`
+- **Authenticate Git with your GitHub credentials?** → `Yes`
+- **How would you like to authenticate?** → `Login with a web browser`
+
+It will show you a one-time code (like `ABCD-1234`). Press Enter, and it opens your browser. Paste the code into the browser page, click **Authorize**, and you're connected.
+
+Verify it worked:
 
 ```bash
-# Node.js (current: v25, or use LTS v22)
+gh auth status
+```
+
+You should see a green checkmark and your GitHub username.
+
+### Step 6: Install Node.js
+
+Node.js is the runtime for JavaScript. Claude Code and most web tools need it.
+
+```bash
 brew install node
+```
 
-# Global packages (matching current machine)
+This takes a minute or two. Verify it worked:
+
+```bash
+node --version
+```
+
+You should see `v22.x.x` or `v25.x.x`. Any version 20+ is fine.
+
+```bash
+npm --version
+```
+
+You should see `10.x` or `11.x`. npm is the package manager that comes with Node.
+
+### Step 7: Install Claude Code
+
+Claude Code is an AI coding assistant that runs in your terminal.
+
+```bash
 npm install -g @anthropic-ai/claude-code
-npm install -g @openai/codex
-npm install -g @google/gemini-cli
-npm install -g pnpm
-npm install -g bun
-npm install -g tsx
-npm install -g concurrently
-npm install -g vercel
-npm install -g eas-cli
-npm install -g @tobilu/qmd
 ```
 
-### 4. Claude Code + Codex
+Verify:
 
 ```bash
-# Already installed above via npm, verify:
 claude --version
-codex --version
-
-# Add API keys to ~/.zshrc
-cat >> ~/.zshrc << 'KEYS'
-
-# AI API Keys
-export ANTHROPIC_API_KEY="sk-ant-..."
-export OPENAI_API_KEY="sk-..."
-export GOOGLE_API_KEY="AI..."
-export XAI_API_KEY="xai-..."
-KEYS
-
-source ~/.zshrc
 ```
 
-### 5. Cursor IDE
+Now start it for the first time:
 
 ```bash
-brew install --cask cursor
+claude
 ```
 
-Extensions to install:
-- ESLint, Prettier, Tailwind CSS IntelliSense
-- Python (Microsoft), GitLens, Error Lens
+It will open your browser to log in. You need an Anthropic account:
+1. If you don't have one, go to **console.anthropic.com** in your browser and click **Sign up**
+2. After logging in and authorizing, the terminal will say you're authenticated
+3. Type `/exit` to quit Claude for now -- we'll start it again in the right folder
+
+### Step 8: Create a Projects Folder and Clone This Repo
+
+"Cloning" means downloading a copy of a code project from GitHub to your computer.
+
+First, create a folder for all your code projects:
+
+```bash
+mkdir -p ~/projects
+```
+
+Now clone this setup repo:
+
+```bash
+cd ~/projects && gh repo clone matthewliu/don-environment-setup
+```
+
+Verify it worked:
+
+```bash
+ls ~/projects/don-environment-setup
+```
+
+You should see `README.md`, `windows-setup.md`, and `mac-setup.md`.
+
+**Tier 0 is complete.** You now have a terminal, git, GitHub, Node.js, Claude Code, and this guide on your machine.
 
 ---
 
-## Tier 2: Full Dev Environment
+## Tier 1: Hand Off to Claude
 
-### 6. Python
+Now start Claude Code inside this repo:
+
+```bash
+cd ~/projects/don-environment-setup && claude
+```
+
+Claude will start up. Paste this message to it:
+
+> Read the file mac-setup.md. I just finished Tier 0 -- Terminal, Homebrew, git, GitHub, Node.js, and Claude Code are installed and working. I'm a beginner who has never coded before. Please do these things for me step by step:
+>
+> 1. Install the global npm packages listed in Tier 1 (pnpm, tsx)
+> 2. Help me download and set up Cursor (my code editor)
+> 3. Help me sign up for Vercel (for deploying web apps later)
+> 4. Check what's already installed and tell me if anything from Tier 0 needs fixing
+>
+> After that, explain what Tier 2 covers and ask me if I'm ready to continue or want to stop for today.
+
+### What Claude will do:
+
+**npm packages** -- it will run these for you:
+```bash
+npm install -g pnpm tsx
+```
+
+**Cursor IDE:**
+1. Go to **cursor.com** in your browser
+2. Click **Download for Mac**
+3. Open the downloaded `.dmg` file
+4. Drag **Cursor** into your **Applications** folder
+5. Open Cursor from Applications (or Spotlight: Cmd+Space → type `Cursor`)
+6. If Mac says "Cursor is from an unidentified developer" → go to **System Settings > Privacy & Security** → scroll down → click **Open Anyway**
+7. Inside Cursor, install these extensions (click the Extensions icon in the left sidebar, search for each):
+   - ESLint
+   - Prettier
+   - Tailwind CSS IntelliSense
+   - GitLens
+   - Error Lens
+
+**Cloud accounts:**
+
+| Service | URL | Why | Free? |
+|---------|-----|-----|-------|
+| **GitHub** | github.com | Already done in Tier 0 | Yes |
+| **Anthropic** | console.anthropic.com | Already done (Claude Code login) | Pay-as-you-go |
+| **Vercel** | vercel.com | Easiest way to deploy web apps | Yes (hobby tier) |
+
+**Vercel signup:**
+- Go to **vercel.com** in your browser
+- Click **Sign Up**
+- Choose **Continue with GitHub**
+- GitHub will ask to authorize Vercel -- click **Authorize Vercel**
+- Choose **Hobby** (free) plan
+- You're in. No credit card needed.
+
+### How to set up Tier 2 later
+
+When you're ready, start Claude in this folder again and paste:
+
+> Read mac-setup.md. I finished Tiers 0 and 1. Set up Tier 2 for me -- Python, PostgreSQL, Codex CLI, and Railway. Check what's already installed first and skip anything that's done. Explain what each thing is as you install it.
+
+---
+
+## Tier 2: Build Real Projects
+
+### 7. Python
+
+Python is a programming language used for backends, AI, data science. Many of Matt's projects use it.
 
 ```bash
 brew install python@3.12 pipx virtualenv
-
-# Add pipx to PATH
-pipx ensurepath
-
-# Global Python CLI tools
-pipx install copier
-pipx install ruff
 ```
 
-### 7. Databases
+```bash
+pipx ensurepath
+```
+
+Close and reopen Terminal (or run `source ~/.zshrc`) for the PATH change to take effect.
+
+Verify:
 
 ```bash
-# PostgreSQL 16 (primary DB for all projects)
+python3 --version
+```
+
+You should see `Python 3.12.x`.
+
+**Virtual Environments -- Why They Matter:**
+
+Every Python project should have its own isolated environment. This prevents conflicts where Project A needs library v1 and Project B needs library v2.
+
+```bash
+# The workflow for EVERY Python project:
+
+# 1. Enter the project folder
+cd ~/projects/some-python-app
+
+# 2. Create a virtual environment (one-time per project)
+python3 -m venv .venv
+
+# 3. Activate it (do this every time you work on the project)
+source .venv/bin/activate
+# Your prompt changes to show (.venv)
+
+# 4. Install the project's dependencies
+pip install -r requirements.txt
+
+# 5. Work on the project...
+
+# 6. When done, deactivate
+deactivate
+```
+
+### 8. PostgreSQL
+
+PostgreSQL is a database -- where apps store their data (users, posts, settings, etc.).
+
+```bash
 brew install postgresql@16
+```
+
+```bash
 brew services start postgresql@16
+```
+
+```bash
 echo 'export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+```
+
+```bash
 source ~/.zshrc
+```
+
+```bash
 createdb $(whoami)
+```
 
-# pgvector extension (vector similarity)
-brew install pgvector
+Verify:
 
-# Redis (for x-business-intelligence)
-brew install redis
-brew services start redis
+```bash
+psql -c "SELECT version();"
+```
 
-# SQLite (already included with macOS)
+You should see a PostgreSQL version line. Type `\q` or press **Ctrl+D** to exit if it drops you into a `psql` prompt.
+
+SQLite (a simpler database for development) is already built into macOS:
+
+```bash
 sqlite3 --version
 ```
 
-### 8. Deployment CLIs
+### 9. Codex CLI
+
+Codex is OpenAI's coding assistant (similar to Claude Code but uses GPT models).
 
 ```bash
-brew install railway          # Railway (AgenticMiniApps, AgentToolkit)
+npm install -g @openai/codex
 ```
 
-Not needed: Heroku, AWS CLI, hcloud (install only if a specific project requires them).
-
-### 9. Utility CLIs
+You'll need an OpenAI API key to use it. Sign up at **platform.openai.com**, then:
 
 ```bash
-brew install ripgrep          # Fast search (Claude Code uses this)
-brew install jq               # JSON processing
-brew install tmux             # Terminal multiplexer
-brew install watch            # Repeat commands
-brew install overmind         # Process manager (Procfile runner)
-brew install coreutils        # GNU coreutils
-brew install openssl          # TLS/crypto
+echo 'export OPENAI_API_KEY="sk-your-key-here"' >> ~/.zshrc
 ```
 
-Optional (install if needed):
 ```bash
-brew install graphviz         # Diagram rendering
-brew install ffmpeg           # Media processing
-brew install cloudflared      # Cloudflare tunnels
+source ~/.zshrc
 ```
+
+### 10. Railway CLI
+
+Railway is a platform for deploying apps to the internet. Matt's projects use it.
+
+```bash
+brew install railway
+```
+
+```bash
+railway login
+```
+
+This opens your browser. Sign up at **railway.app** if you don't have an account (sign up with GitHub for easiest setup), then authorize.
+
+### 11. Cloud Accounts (Tier 2)
+
+| Service | URL | Why | Free? |
+|---------|-----|-----|-------|
+| **OpenAI** | platform.openai.com | Codex CLI, GPT API | Pay-as-you-go |
+| **Railway** | railway.app | Deploy backends + databases | $5/mo trial credit |
 
 ---
 
-## Tier 3: Toolkit + Specialized
+## Tier 3: Full Stack
 
-### 10. Claude Toolkit
+### 12. Redis
+
+Redis is an in-memory database used for caching and job queues. Only one project (x-business-intelligence) needs it.
 
 ```bash
-# Clone (use your actual repo URL)
-cd ~/Environments/AgentToolkit
-git clone https://github.com/matthewliu/claude-toolkit.git
+brew install redis
+```
+
+```bash
+brew services start redis
+```
+
+Verify:
+
+```bash
+redis-cli ping
+```
+
+Should print `PONG`.
+
+### 13. Docker
+
+Docker runs apps in containers (like lightweight virtual machines). Needed for deploying some projects.
+
+1. Go to **docker.com/products/docker-desktop** in your browser
+2. Click **Download for Mac (Apple Silicon)**
+3. Open the downloaded `.dmg` file
+4. Drag **Docker** into your **Applications** folder
+5. Open Docker Desktop from Applications
+6. It will ask for your Mac password -- enter it
+7. Wait for Docker to start (you'll see a whale icon in the menu bar at the top of your screen)
+
+Verify in Terminal:
+
+```bash
+docker --version
+```
+
+### 14. Claude Toolkit
+
+Matt's toolkit adds commands like `/plan-feature`, `/implement-feature`, `/review-code` to Claude Code.
+
+```bash
+cd ~/projects
+```
+
+```bash
+gh repo clone matthewliu/claude-toolkit
+```
+
+```bash
 cd claude-toolkit
+```
 
-# Install MCP review server deps
+```bash
 cd mcp-servers/review-server && npm install && cd ../..
+```
 
-# Deploy to ~/.claude/
+```bash
 ./sync.sh push
-
-# Enable plugin in ~/.claude/settings.json:
-#   "enabledPlugins": { "matt-toolkit": true }
-
-# Optional: Playwright MCP for browser automation
-claude mcp add playwright -- npx @playwright/mcp@latest
-
-# Optional: StatusLine HUD
-# In ~/.claude/settings.json:
-#   "statusLine": { "type": "command", "command": "node $HOME/.claude/hud/tli-hud.mjs" }
 ```
 
-### 11. Security Tools
+Now you need to enable the plugin. Open the settings file:
 
 ```bash
-brew install gitleaks         # Secret scanning
-pipx install semgrep          # Static analysis
+open ~/.claude/settings.json
 ```
 
-### 12. Docker
+This opens the file in TextEdit. Find the `"enabledPlugins"` section and add `"matt-toolkit": true` inside the curly braces. Save and close.
+
+(If you're not sure how to edit JSON, ask Claude Code to do it for you.)
+
+### 15. Security Tools
 
 ```bash
-brew install --cask docker
-# Open Docker Desktop to finish setup
+brew install gitleaks
+```
+
+```bash
+pipx install semgrep
+```
+
+### 16. Utility CLIs
+
+```bash
+brew install ripgrep jq tmux watch overmind coreutils openssl
 ```
 
 ---
 
 ## Tier 4: When Needed
 
-### 13. Rust
+Don't install these unless you're working on a project that specifically needs them. Ask Claude if you're unsure.
 
-Only for Joyride backend.
+### Rust (Joyride backend only)
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Press Enter when it asks about default installation. Then:
+
+```bash
 source $HOME/.cargo/env
 ```
 
-### 14. Ruby + iOS
-
-Only for building iOS apps locally.
+### Ruby + iOS (building iOS apps locally)
 
 ```bash
 brew install rbenv ruby-build
+```
+
+```bash
 rbenv install 3.2.0
+```
+
+```bash
 rbenv global 3.2.0
+```
+
+```bash
 gem install cocoapods
 ```
 
-### 15. Mobile Dev
+### Mobile Dev
 
 ```bash
-# Watchman (file watcher for React Native)
 brew install watchman
+```
 
-# Android Studio
+```bash
 brew install --cask android-studio
+```
 
-# Xcode: Install from App Store, then:
+For iOS, install **Xcode** from the Mac App Store (it's free but ~12 GB), then:
+
+```bash
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+```
+
+```bash
 sudo xcodebuild -runFirstLaunch
 ```
 
 ---
 
-## Cloud Accounts
+## Mac Terminal Cheat Sheet
 
-### Already have (transfer/re-auth on new machine)
-- GitHub, Anthropic, OpenAI, Google Cloud, xAI
-- Railway, Vercel, Docker Hub
-- Logto, SendGrid
-
-### API keys to migrate
-
-Copy from old machine's `~/.zshrc` (or password manager):
-
-```bash
-# Core (toolkit reviews + AI tools)
-ANTHROPIC_API_KEY
-OPENAI_API_KEY
-GOOGLE_API_KEY
-XAI_API_KEY
-
-# Project-specific (add as needed)
-GROQ_API_KEY
-PERPLEXITY_API_KEY
-SENDGRID_API_KEY
-X_BEARER_TOKEN
-```
-
-### Settings to migrate
-
-These are the critical dotfiles/configs to copy from the old machine:
-
-```
-~/.claude/settings.json       # Claude Code settings, permissions, plugins
-~/.claude/CLAUDE.md           # Global instructions
-~/.claude/PREFERENCES.md      # Personal preferences (Obsidian path, etc.)
-~/.claude.json                # MCP server registrations
-~/.gitconfig                  # Git config
-~/.zshrc                      # Shell config + API keys
-~/.ssh/                       # SSH keys (or generate new ones)
-```
-
-The toolkit itself doesn't need to be copied -- just clone it fresh and run `./sync.sh push`.
+| What you want to do | Command | Example |
+|---------------------|---------|---------|
+| See where you are | `pwd` | Shows `/Users/yourname/projects` |
+| List files here | `ls` | Shows files in current folder |
+| List ALL files (including hidden) | `ls -a` | Shows `.env`, `.git`, etc. |
+| Go into a folder | `cd foldername` | `cd projects` |
+| Go up one folder | `cd ..` | Goes to parent folder |
+| Go to home folder | `cd ~` | Goes to `/Users/yourname` |
+| Create a folder | `mkdir foldername` | `mkdir my-app` |
+| Delete a file | `rm filename` | `rm old-file.txt` (permanent!) |
+| Clear the screen | `clear` | Or press **Cmd+K** |
+| Cancel a running command | **Ctrl+C** | Stops whatever is running |
+| Search previous commands | **Up arrow** | Press up to scroll through history |
+| Autocomplete file names | **Tab** | Press Tab while typing a name |
 
 ---
 
-## Full One-Shot Script
+## API Keys Summary
 
-If you want to run everything in one go (Tiers 1-3):
+Add these to `~/.zshrc` as you sign up for services. Run each line in Terminal:
 
 ```bash
-# Prerequisites: Xcode CLI tools + Homebrew already installed
+# Tier 1 (get immediately)
+echo 'export ANTHROPIC_API_KEY="sk-ant-your-key"' >> ~/.zshrc
+```
 
-# Languages & tools
-brew install git gh node python@3.12 pipx virtualenv
-brew install ripgrep jq tmux watch overmind coreutils openssl
+```bash
+# Tier 2 (get when needed)
+echo 'export OPENAI_API_KEY="sk-your-key"' >> ~/.zshrc
+```
 
-# Databases
-brew install postgresql@16 redis pgvector
-brew services start postgresql@16
-brew services start redis
-echo 'export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+After adding keys, always run:
 
-# Deployment
-brew install railway
-
-# Security
-brew install gitleaks
-
-# GUI apps
-brew install --cask cursor docker
-
-# Node globals
-npm install -g @anthropic-ai/claude-code @openai/codex @google/gemini-cli
-npm install -g pnpm bun tsx concurrently vercel eas-cli @tobilu/qmd
-
-# Python globals
-pipx install copier ruff semgrep
-
-# Create default DB
+```bash
 source ~/.zshrc
-createdb $(whoami)
-
-echo "Done. Add API keys to ~/.zshrc, clone toolkit, run sync.sh push."
 ```
+
+Don't worry about Google, xAI, Groq, Perplexity, SendGrid, etc. until you're working on a specific project that needs them.
 
 ---
 
-## Verify
+## Verify Your Setup
+
+After completing Tiers 0-2, run these in Terminal:
 
 ```bash
-echo "=== Core ==="
-node --version          # v25.x
-npm --version           # 11.x
-python3 --version       # 3.12.x
-git --version           # 2.48+
-gh --version            # 2.88+
-
-echo "=== AI ==="
-claude --version        # Claude Code 2.x
-codex --version         # Codex 0.x
-
-echo "=== Databases ==="
-psql --version          # 16.x
-sqlite3 --version       # 3.x
-redis-cli ping          # PONG
-
-echo "=== Package Managers ==="
-pnpm --version
-bun --version
-
-echo "=== Deploy ==="
-railway version
-vercel --version
-
-echo "=== Search ==="
-rg --version            # ripgrep
+node --version
 ```
+
+```bash
+npm --version
+```
+
+```bash
+python3 --version
+```
+
+```bash
+git --version
+```
+
+```bash
+gh --version
+```
+
+```bash
+claude --version
+```
+
+```bash
+psql --version
+```
+
+```bash
+sqlite3 --version
+```
+
+If any of these say `command not found`, tell Claude Code and it will help you fix it.
