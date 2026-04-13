@@ -100,8 +100,12 @@ Enable long file paths (prevents errors with deeply nested code folders):
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f
 ```
 
-Enable Developer Mode (lets git create special file links):
-- Open **Settings** → **Privacy & Security** → **For Developers** → turn on **Developer Mode**
+Enable Developer Mode (lets git create special file links called symlinks):
+- Click the **Start menu** → click the **gear icon** (Settings)
+- In the left sidebar, click **System**
+- Scroll down and click **For developers**
+- Toggle **Developer Mode** to **On**
+- Click **Yes** on the confirmation popup
 
 **4. Sign up for Vercel (free, for deploying web apps later):**
 - Go to **vercel.com** in your browser
