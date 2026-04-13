@@ -57,8 +57,14 @@ Follow these steps in order. Copy-paste the commands exactly. Don't skip anythin
 
 WSL2 puts a real Linux (Ubuntu) inside Windows. This is where you'll write code.
 
-1. Click the **Start menu**, type `PowerShell`, right-click **Windows PowerShell**, and choose **Run as administrator**.
-2. Paste this command and press Enter:
+1. **First, disable Smart App Control** -- this Windows 11 security feature blocks developer tools including Ubuntu, Node.js packages, and CLI tools. You need to turn it off or you'll hit errors repeatedly:
+   - Open **Settings** (Start menu → gear icon)
+   - Type `Smart App Control` in the search bar at the top
+   - Click the result
+   - Change it from **On** to **Off**
+   - It will warn this can't be turned back on without resetting Windows -- that's fine for a dev machine, confirm it
+2. Click the **Start menu**, type `PowerShell`, right-click **Windows PowerShell**, and choose **Run as administrator**.
+3. Paste this command and press Enter:
 
 ```powershell
 wsl --install
