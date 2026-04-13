@@ -134,6 +134,8 @@ Back in Terminal, install Git and the GitHub CLI:
 brew install git gh
 ```
 
+**A note about install commands:** Both `brew install` and `npm install` print a lot of text as they work -- download progress, package names, sometimes yellow warnings. **This is all normal.** Just wait for it to finish (your `$` or `%` prompt comes back) before running the next command. Only worry if you see red error messages.
+
 Now configure git with your name and the email you used for GitHub:
 
 ```bash
@@ -204,11 +206,17 @@ Claude Code is an AI coding assistant that runs in your terminal.
 npm install -g @anthropic-ai/claude-code
 ```
 
-Verify:
+**What to expect:** npm will download a lot of files. You'll see progress bars, package names flying by, and possibly some yellow "WARN" messages. **Warnings are normal -- ignore them.** Only red "ERR!" messages are real problems. The install takes 1-2 minutes.
+
+When it finishes, you'll see something like `added 123 packages` and your prompt comes back.
+
+Verify it installed correctly:
 
 ```bash
 claude --version
 ```
+
+You should see a version number like `2.x.x`. If you see `command not found`, close Terminal, reopen it, and try again.
 
 Now start it for the first time:
 

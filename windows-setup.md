@@ -165,6 +165,8 @@ sudo apt update && sudo apt upgrade -y && sudo apt install -y build-essential cu
 
 It will ask for your password (the one you just created). Type it and press Enter. This downloads updates and essential tools -- takes a few minutes.
 
+**A note about install commands:** Commands like `sudo apt install`, `npm install`, and `brew install` print a LOT of text as they work -- download progress, package names, sometimes yellow warnings. **This is all normal.** Just wait for it to finish (your `$` prompt comes back) before running the next command. Only worry if you see red error messages.
+
 Then create a folder for your code:
 
 ```bash
@@ -348,11 +350,17 @@ Claude Code is an AI coding assistant that runs in your terminal. Think of it as
 npm install -g @anthropic-ai/claude-code
 ```
 
-Verify:
+**What to expect:** npm will download a lot of files. You'll see progress bars, package names flying by, and possibly some yellow "WARN" messages. **Warnings are normal -- ignore them.** Only red "ERR!" messages are real problems. The install takes 1-2 minutes.
+
+When it finishes, you'll see something like `added 123 packages` and your prompt comes back.
+
+Verify it installed correctly:
 
 ```bash
 claude --version
 ```
+
+You should see a version number like `2.x.x`. If you see `command not found`, close the terminal, reopen Ubuntu, and try again.
 
 Now start it for the first time:
 
