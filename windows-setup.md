@@ -87,12 +87,25 @@ This enables the WSL2 feature without downloading Ubuntu yet (we'll do that sepa
 
 After your computer restarts:
 
-1. Open **Microsoft Store** (click Start menu, type `Microsoft Store`, click the app)
-2. In the Store's search bar at the top, type `Ubuntu`
-3. You'll see several results. Click **Ubuntu** (the one that just says "Ubuntu" with no version number -- it's published by Canonical Group Limited)
-4. Click the **Get** or **Install** button
-5. **The download is large (~600 MB to 2 GB).** While it downloads, jump to [Step 1D: While Ubuntu Downloads](#step-1d-while-ubuntu-downloads) and come back here when it's done.
-6. Once the download finishes, click **Open** in the Microsoft Store (or click Start menu → type `Ubuntu` → click the app)
+1. Open **PowerShell as Administrator** again (Start menu → type `PowerShell` → right-click → **Run as administrator**)
+2. Paste this command and press Enter:
+
+```powershell
+wsl --install -d Ubuntu
+```
+
+3. **The download is ~600 MB to 2 GB.** While it downloads, jump to [Step 1D: While Ubuntu Downloads](#step-1d-while-ubuntu-downloads) and come back here when it's done.
+4. Once the download finishes and the install completes, it will either open Ubuntu automatically or tell you to launch it. If it doesn't open on its own, type this in PowerShell:
+
+```powershell
+ubuntu
+```
+
+**If the PowerShell install fails**, use the Microsoft Store as a fallback:
+- Open **Microsoft Store** (Start menu → type `Microsoft Store`)
+- Search for `Ubuntu`
+- Click the one that just says **Ubuntu** (published by Canonical Group Limited)
+- Click **Get** / **Install**, then **Open** when done
 
 #### Part C (continued): First-time Ubuntu setup
 
