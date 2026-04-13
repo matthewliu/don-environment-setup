@@ -55,36 +55,101 @@ Follow these steps in order. Copy-paste the commands exactly. Don't skip anythin
 
 ### Step 1: Install WSL2 + Ubuntu
 
-WSL2 puts a real Linux (Ubuntu) inside Windows. This is where you'll write code.
+WSL2 puts a real Linux (Ubuntu) inside Windows. This is where you'll write code. The install has two parts: first enable WSL2, then install Ubuntu.
 
-1. **First, disable Smart App Control** -- this Windows 11 security feature blocks developer tools including Ubuntu, Node.js packages, and CLI tools. You need to turn it off or you'll hit errors repeatedly:
-   - Open **Settings** (Start menu → gear icon)
-   - Type `Smart App Control` in the search bar at the top
-   - Click the result
-   - Change it from **On** to **Off**
-   - It will warn this can't be turned back on without resetting Windows -- that's fine for a dev machine, confirm it
-2. Click the **Start menu**, type `PowerShell`, right-click **Windows PowerShell**, and choose **Run as administrator**.
-3. Paste this command and press Enter:
+#### Part A: Disable Smart App Control
+
+This Windows 11 security feature blocks developer tools including Ubuntu, Node.js packages, and CLI tools. You need to turn it off first.
+
+1. Open **Settings** (Start menu → gear icon)
+2. Type `Smart App Control` in the search bar at the top
+3. Click the result
+4. Change it from **On** to **Off**
+5. It will warn this can't be turned back on without resetting Windows -- that's fine for a dev machine, confirm it
+
+#### Part B: Enable WSL2
+
+1. Click the **Start menu**, type `PowerShell`
+2. Right-click **Windows PowerShell** and choose **Run as administrator**
+3. If a popup asks "Do you want to allow this app to make changes?" click **Yes**
+4. Paste this command and press Enter:
 
 ```powershell
-wsl --install
+wsl --install --no-distribution
 ```
 
-3. **Restart your computer** when it tells you to.
-4. After restart, Ubuntu **might** open automatically. If it doesn't, open it yourself:
-   - Click the **Start menu**, type `Ubuntu`, and click the **Ubuntu** app
-   - If you don't see it, open **Microsoft Store**, search for "Ubuntu", install it, then launch it
-   - **The Ubuntu download is large (~2-6 GB).** This is normal -- it's a full Linux operating system. While it downloads, jump to [Step 1B: While Ubuntu Downloads](#step-1b-while-ubuntu-downloads) below and come back here when it's done.
-5. The first time Ubuntu opens, it asks you to create a username and password.
-   - **Username:** pick something short and lowercase, like `don` (no spaces, no capitals)
-   - **Password:** pick something you'll remember. When you type it, nothing shows on screen -- that's normal, just type and press Enter.
-6. You're now at a Linux command prompt. It looks like `don@PCNAME:~$`. This is where you'll work.
+This enables the WSL2 feature without downloading Ubuntu yet (we'll do that separately so it's clearer).
 
-**Tip:** For future sessions, open **Windows Terminal** (Start menu → type "Terminal"). It has a dropdown arrow next to the `+` tab button -- click it and select **Ubuntu** to get a Linux tab. You can set Ubuntu as the default profile in Terminal settings so it always opens Linux first.
+5. Wait for it to finish. You'll see messages about enabling features.
+6. **Restart your computer** when it tells you to.
 
-Now skip ahead to [Step 2: Understand the WSL2 File System](#step-2-understand-the-wsl2-file-system).
+#### Part C: Install Ubuntu
 
-### Step 1B: While Ubuntu Downloads
+After your computer restarts:
+
+1. Open **Microsoft Store** (click Start menu, type `Microsoft Store`, click the app)
+2. In the Store's search bar at the top, type `Ubuntu`
+3. You'll see several results. Click **Ubuntu** (the one that just says "Ubuntu" with no version number -- it's published by Canonical Group Limited)
+4. Click the **Get** or **Install** button
+5. **The download is large (~600 MB to 2 GB).** While it downloads, jump to [Step 1D: While Ubuntu Downloads](#step-1d-while-ubuntu-downloads) and come back here when it's done.
+6. Once the download finishes, click **Open** in the Microsoft Store (or click Start menu → type `Ubuntu` → click the app)
+
+#### Part C (continued): First-time Ubuntu setup
+
+When Ubuntu opens for the first time, it will spend a minute "Installing" (extracting files). Then it asks you to create a Linux user account:
+
+```
+Enter new UNIX username:
+```
+
+7. Type a short lowercase username like `don` (no spaces, no capitals) and press Enter
+8. It asks for a password:
+
+```
+New password:
+```
+
+9. Type a password and press Enter. **Nothing shows on screen while you type -- no dots, no stars, nothing.** That's normal Linux behavior. Just type your password and press Enter.
+10. It asks you to retype the password. Type the same password again and press Enter.
+11. You'll see a message like `Installation successful!` and then a prompt that looks like:
+
+```
+don@YOURPC:~$
+```
+
+**You're in Linux.** This is your command line. You'll type commands here.
+
+#### Part C (continued): Update Ubuntu and install build tools
+
+Copy and paste this entire block into the Ubuntu terminal and press Enter:
+
+```bash
+sudo apt update && sudo apt upgrade -y && sudo apt install -y build-essential curl wget unzip git
+```
+
+It will ask for your password (the one you just created). Type it and press Enter. This downloads updates and essential tools -- takes a few minutes.
+
+Then create a folder for your code:
+
+```bash
+mkdir -p ~/projects
+```
+
+#### How to open Ubuntu in the future
+
+**Option 1 (easiest):** Click Start menu → type `Ubuntu` → click the app.
+
+**Option 2 (better):** Use **Windows Terminal** which has tabs:
+- Click Start menu → type `Terminal` → open **Terminal**
+- Click the **small down arrow (v)** next to the **+** tab button at the top
+- Click **Ubuntu** from the dropdown
+- This gives you an Ubuntu tab alongside PowerShell tabs
+
+**Tip:** To make Ubuntu the default tab, open Terminal → click the down arrow → **Settings** → under "Default profile" select **Ubuntu** → click **Save**.
+
+Now continue to [Step 1D](#step-1d-while-ubuntu-downloads) if you haven't done it, or [Step 2](#step-2-understand-the-wsl2-file-system) if you have.
+
+#### Step 1D: While Ubuntu Downloads
 
 Do these while you wait. All of this is in your browser or Windows settings -- no Linux needed.
 
