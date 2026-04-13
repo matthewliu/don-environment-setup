@@ -65,10 +65,15 @@ wsl --install
 ```
 
 3. **Restart your computer** when it tells you to.
-4. After restart, an Ubuntu window opens automatically. It asks you to create a username and password.
+4. After restart, Ubuntu **might** open automatically. If it doesn't, open it yourself:
+   - Click the **Start menu**, type `Ubuntu`, and click the **Ubuntu** app
+   - If you don't see it, open **Microsoft Store**, search for "Ubuntu", install it, then launch it
+5. The first time Ubuntu opens, it asks you to create a username and password.
    - **Username:** pick something short and lowercase, like `don` (no spaces, no capitals)
    - **Password:** pick something you'll remember. When you type it, nothing shows on screen -- that's normal, just type and press Enter.
-5. You're now at a Linux command prompt. It looks like `don@PCNAME:~$`. This is where you'll work.
+6. You're now at a Linux command prompt. It looks like `don@PCNAME:~$`. This is where you'll work.
+
+**Tip:** For future sessions, open **Windows Terminal** (Start menu → type "Terminal"). It has a dropdown arrow next to the `+` tab button -- click it and select **Ubuntu** to get a Linux tab. You can set Ubuntu as the default profile in Terminal settings so it always opens Linux first.
 
 Run this to update everything and install basic tools:
 
