@@ -27,20 +27,16 @@ Once Claude Code is running inside this repo, you tell it to read this file and 
 ### Tier 1: Hand off to Claude
 - [Let Claude finish the environment setup](#tier-1-hand-off-to-claude)
 
-### Tier 2: Build real projects (tell Claude when ready)
-- [Python](#7-python--virtual-environments)
-- [PostgreSQL](#8-postgresql)
-- [Codex CLI](#9-codex-cli)
-- [Railway CLI](#10-railway-cli)
-- [More cloud accounts](#11-cloud-accounts-tier-2)
+### Tier 2: Install everything else (one big block)
+- [Python, PostgreSQL, Codex, Railway, npm packages -- all at once](#tier-2-install-everything-else)
 
-### Tier 3: Full stack (when you need it)
-- [Redis](#12-redis)
-- [Docker](#13-docker)
-- [Toolkit setup](#14-claude-toolkit)
-- [Security tools](#15-security-tools)
+### Tier 3: Toolkit + security tools
+- [Claude Toolkit](#tier-3-toolkit--security-tools)
+- [Security tools (gitleaks, semgrep)](#security-tools)
 
-### Tier 4: Skip for now
+### Tier 4: Skip for now (install when a project needs it)
+- Docker
+- Redis
 - Rust (only needed for Joyride backend)
 - Ruby (only needed for iOS CocoaPods)
 - Go (only needed for niche CLI tools)
@@ -453,34 +449,135 @@ npm install -g pnpm tsx
 
 ### How to set up Tier 2 later
 
-When you're ready to install Python, PostgreSQL, and more, start Claude in this folder again and paste:
+When you're ready, you can either follow the Tier 2 steps below yourself (they're copy-paste), or start Claude in this folder and paste:
 
-> Read windows-setup.md. I finished Tiers 0 and 1. Set up Tier 2 for me -- Python, PostgreSQL, Codex CLI, and Railway. Check what's already installed first and skip anything that's done. Explain what each thing is as you install it.
+> Read windows-setup.md. I finished Tiers 0 and 1. Walk me through Tier 2 -- install Python, PostgreSQL, Codex, Railway, and npm packages. Check what's already installed first and skip anything that's done. Explain what each thing is as you install it.
 
 ---
 
-## Tier 2: Build Real Projects
+## Tier 2: Install Everything Else
 
-### 7. Python + Virtual Environments
+This installs Python, PostgreSQL, Codex CLI, Railway CLI, and useful npm packages in one session. Run these in your Ubuntu terminal.
+
+### Step 1: Install system packages (one command)
+
+This installs Python, PostgreSQL, and developer tools all at once:
 
 ```bash
-# Inside WSL2
+sudo apt install -y python3 python3-pip python3-venv pipx postgresql postgresql-contrib
+```
 
-# Python 3 is pre-installed on Ubuntu, but ensure it's up to date
-sudo apt install -y python3 python3-pip python3-venv
+This takes a few minutes. Wait for the `$` prompt to come back.
 
-# Verify
-python3 --version    # Should show 3.12+
+### Step 2: Configure Python and PostgreSQL
 
-# Install pipx (for global CLI tools, isolated from projects)
-sudo apt install -y pipx
+Set up pipx (for installing Python CLI tools):
+
+```bash
 pipx ensurepath
+```
+
+```bash
 source ~/.bashrc
 ```
 
-**Virtual Environments -- How They Work:**
+Start PostgreSQL and create your database:
 
-Every Python project should have its own isolated environment. This prevents "dependency hell" where Project A needs library v1 and Project B needs library v2.
+```bash
+sudo service postgresql start
+```
+
+```bash
+sudo -u postgres createuser --superuser $USER
+```
+
+```bash
+createdb $USER
+```
+
+Verify both work:
+
+```bash
+python3 --version
+```
+
+```bash
+psql -c "SELECT version();"
+```
+
+If `psql` drops you into a prompt, press **Ctrl+D** to exit.
+
+**Tip:** To auto-start PostgreSQL when WSL2 opens so you don't have to run `sudo service postgresql start` every time, run these two commands once:
+
+```bash
+echo "$USER ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql start" | sudo tee /etc/sudoers.d/postgresql
+```
+
+```bash
+echo -e '\n# Auto-start PostgreSQL\nif ! pg_isready -q 2>/dev/null; then\n    sudo service postgresql start > /dev/null 2>&1\nfi' >> ~/.bashrc
+```
+
+### Step 3: Install npm packages (one command)
+
+This installs the Codex CLI, Railway CLI, and other useful tools:
+
+```bash
+npm install -g @openai/codex @railway/cli pnpm tsx
+```
+
+Wait for it to finish (yellow warnings = normal).
+
+### Step 4: Log in to Railway
+
+```bash
+railway login
+```
+
+This opens your browser. Sign up at **railway.app** if you don't have an account (use your GitHub account -- easiest), then authorize.
+
+### Step 5: Add API keys
+
+```bash
+echo 'export OPENAI_API_KEY="sk-your-key-here"' >> ~/.bashrc
+```
+
+```bash
+source ~/.bashrc
+```
+
+You need an OpenAI API key for Codex. Sign up at **platform.openai.com**, go to **API Keys**, create one, and paste it in the command above (replacing `sk-your-key-here`).
+
+### Step 6: Verify everything
+
+```bash
+python3 --version
+```
+
+```bash
+psql --version
+```
+
+```bash
+codex --version
+```
+
+```bash
+railway version
+```
+
+```bash
+pnpm --version
+```
+
+```bash
+sqlite3 --version
+```
+
+SQLite is already included with Ubuntu -- no install needed.
+
+### Python Virtual Environments (Important Concept)
+
+Every Python project should have its own isolated environment. This prevents conflicts where Project A needs library v1 and Project B needs library v2.
 
 ```bash
 # The workflow for EVERY Python project:
@@ -511,151 +608,89 @@ deactivate
 - The `.venv/` folder is local to the project and gitignored
 - If something breaks, just delete `.venv/` and recreate it
 
-### 8. PostgreSQL
+### Cloud Accounts (Tier 2)
 
-```bash
-# Inside WSL2
-sudo apt install -y postgresql postgresql-contrib
-
-# Start the service
-sudo service postgresql start
-
-# Create your user (match your WSL username)
-sudo -u postgres createuser --superuser $USER
-createdb $USER
-
-# Verify
-psql -c "SELECT version();"
-
-# SQLite is already included in Python and Ubuntu
-sqlite3 --version
-```
-
-**Tip:** To auto-start PostgreSQL when WSL2 opens, add to your `~/.bashrc`:
-```bash
-# Auto-start PostgreSQL
-if ! pg_isready -q 2>/dev/null; then
-    sudo service postgresql start > /dev/null 2>&1
-fi
-```
-
-To avoid the sudo password prompt each time:
-```bash
-# Run this once
-echo "$USER ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql start" | sudo tee /etc/sudoers.d/postgresql
-```
-
-### 9. Codex CLI
-
-```bash
-# Inside WSL2
-npm install -g @openai/codex
-
-# Add your OpenAI API key
-echo 'export OPENAI_API_KEY="sk-your-key-here"' >> ~/.bashrc
-source ~/.bashrc
-
-# Verify
-codex --version
-```
-
-### 10. Railway CLI
-
-Railway is where Matt's apps are deployed. Simpler than AWS, more flexible than Vercel for backends.
-
-```bash
-# Inside WSL2
-npm install -g @railway/cli
-
-# Login
-railway login
-
-# Verify
-railway --version
-```
-
-### 11. Cloud Accounts (Tier 2)
-
-| Service | URL | Why | Free Tier? |
-|---------|-----|-----|-----------|
+| Service | URL | Why | Free? |
+|---------|-----|-----|-------|
 | **OpenAI** | platform.openai.com | Codex CLI, GPT API | Pay-as-you-go |
 | **Railway** | railway.app | Deploy backends + databases | $5/mo trial credit |
-| **Docker Hub** | hub.docker.com | Container registry (for later) | Yes |
 
 ---
 
-## Tier 3: Full Stack
+## Tier 3: Toolkit + Security Tools
 
-### 12. Redis
-
-```bash
-# Inside WSL2
-sudo apt install -y redis-server
-
-# Start it
-sudo service redis-server start
-
-# Verify
-redis-cli ping    # Should return PONG
-```
-
-Only needed for `x-business-intelligence` project (job queue).
-
-### 13. Docker
-
-Install **Docker Desktop** on Windows (not inside WSL2):
-
-1. Download from [docker.com](https://docker.com/products/docker-desktop/)
-2. Install -- it will enable WSL2 integration automatically
-3. In Docker Desktop settings: `Resources > WSL Integration > Enable for Ubuntu`
-
-```bash
-# Verify from inside WSL2
-docker --version
-docker run hello-world
-```
-
-### 14. Claude Toolkit
+### Claude Toolkit
 
 Matt's toolkit adds commands like `/plan-feature`, `/implement-feature`, `/review-code` to Claude Code.
 
 ```bash
-# Inside WSL2
 cd ~/projects
-git clone https://github.com/matthewliu/claude-toolkit.git
-cd claude-toolkit
-
-# Install MCP server deps
-cd mcp-servers/review-server && npm install && cd ../..
-
-# Deploy to your Claude Code config
-./sync.sh push
-
-# Enable the plugin -- edit ~/.claude/settings.json:
-# Add "matt-toolkit": true to enabledPlugins
 ```
+
+```bash
+gh repo clone matthewliu/claude-toolkit
+```
+
+```bash
+cd claude-toolkit
+```
+
+```bash
+cd mcp-servers/review-server && npm install && cd ../..
+```
+
+```bash
+./sync.sh push
+```
+
+Now enable the plugin. The easiest way is to ask Claude Code to do it:
+
+```bash
+cd ~/projects/claude-toolkit && claude
+```
+
+Then tell Claude:
+
+> Add "matt-toolkit": true to the enabledPlugins object in ~/.claude/settings.json
 
 **Note:** `sync.sh` is a bash script and runs perfectly in WSL2. This is one of the reasons WSL2 is the right choice.
 
-### 15. Security Tools
+### Security Tools
 
 ```bash
-# Inside WSL2
-
-# gitleaks (secret scanning)
-# Download latest release binary:
-GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name | tr -d 'v')
-wget "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_amd64.tar.gz"
-tar -xzf "gitleaks_${GITLEAKS_VERSION}_linux_amd64.tar.gz"
-sudo mv gitleaks /usr/local/bin/
-rm -f "gitleaks_${GITLEAKS_VERSION}_linux_amd64.tar.gz" LICENSE README.md
-
-# semgrep (static analysis)
 pipx install semgrep
+```
 
-# ruff (fast Python linter)
+```bash
 pipx install ruff
 ```
+
+Install gitleaks (secret scanning):
+
+```bash
+GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name | tr -d 'v')
+```
+
+```bash
+wget "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_amd64.tar.gz"
+```
+
+```bash
+tar -xzf "gitleaks_${GITLEAKS_VERSION}_linux_amd64.tar.gz" && sudo mv gitleaks /usr/local/bin/ && rm -f "gitleaks_${GITLEAKS_VERSION}_linux_amd64.tar.gz" LICENSE README.md
+```
+
+---
+
+## Tier 4: Skip for Now
+
+Install these only when a specific project needs them. Ask Claude Code if you're unsure.
+
+- **Docker** -- for containerized deploys. Install Docker Desktop on Windows, enable WSL2 integration.
+- **Redis** -- in-memory database. Only needed for x-business-intelligence. `sudo apt install -y redis-server`
+- **Rust** -- only for Joyride backend. `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+- **Ruby** -- only for iOS CocoaPods.
+- **Mobile dev** -- Android Studio, Expo, Xcode.
+- **Heroku, AWS** -- not used.
 
 ---
 
@@ -708,31 +743,45 @@ Don't worry about Google, xAI, Groq, Perplexity, SendGrid, etc. until you're wor
 
 ## Verify Your Setup
 
-After completing Tiers 1-2, run this checklist:
+After completing Tiers 0-2, run each of these in your Ubuntu terminal:
 
 ```bash
-# Should all work from inside WSL2
-echo "=== Core ==="
-node --version          # v22+
-npm --version           # 10+
-python3 --version       # 3.12+
-git --version           # 2.40+
-gh --version            # 2.40+
+node --version
+```
 
-echo "=== AI ==="
-claude --version        # Claude Code
-codex --version         # OpenAI Codex
+```bash
+python3 --version
+```
 
-echo "=== Databases ==="
-psql --version          # PostgreSQL 16+
-sqlite3 --version       # 3.x
+```bash
+git --version
+```
 
-echo "=== Package Managers ==="
+```bash
+gh auth status
+```
+
+```bash
+claude --version
+```
+
+```bash
+codex --version
+```
+
+```bash
+psql --version
+```
+
+```bash
 pnpm --version
+```
 
-echo "=== Deployment ==="
+```bash
 railway version
 ```
+
+If any say `command not found`, tell Claude Code and it will help you fix it.
 
 ---
 
