@@ -216,10 +216,24 @@ Now start it for the first time:
 claude
 ```
 
-It will open your browser to log in. You need an Anthropic account:
-1. If you don't have one, go to **console.anthropic.com** in your browser and click **Sign up**
-2. After logging in and authorizing, the terminal will say you're authenticated
-3. Type `/exit` to quit Claude for now -- we'll start it again in the right folder
+The first time you run Claude Code, it walks you through several setup screens:
+
+1. **Terms of Service** -- it shows a wall of text. Press **Enter** to scroll through, then type `yes` and press Enter to accept.
+
+2. **Login method** -- it asks how you want to log in. Choose one:
+   - **Anthropic account (recommended)** -- if you signed up at console.anthropic.com
+   - It will open your browser. Log in (or sign up if you haven't), then authorize Claude Code.
+   - Once authorized, the terminal will say you're authenticated.
+
+3. **Choose your plan** -- it asks which plan to use. If you're on the Claude Pro/Max subscription, you can use that. Otherwise, use your API key.
+
+4. **Permissions** -- it asks what Claude Code is allowed to do. For now, choose the defaults (you can change this later). It will ask things like:
+   - Allow Claude to read files? → **Yes**
+   - Allow Claude to run commands? → It will ask permission each time (safe default)
+
+5. You should now see Claude Code's prompt -- a place where you can type messages to Claude.
+
+6. Type `/exit` to quit Claude for now -- we'll start it again in the right folder.
 
 ### Step 8: Create a Projects Folder and Clone This Repo
 
