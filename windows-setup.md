@@ -233,14 +233,6 @@ sudo apt update && sudo apt upgrade -y && sudo apt install -y build-essential cu
 
 It will ask for your password (the one you just created). Type it and press Enter.
 
-Create a folder for all your code projects:
-
-```bash
-mkdir -p ~/projects
-```
-
-**From now on, always use the Ubuntu tab in Windows Terminal for coding.** You can open Windows Terminal from the Start menu -- it has tabs for PowerShell and Ubuntu. Use the Ubuntu tab.
-
 ### Step 2: Understand the WSL2 File System
 
 WSL2 creates a Linux filesystem alongside your Windows filesystem. Here's how they relate:
