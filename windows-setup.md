@@ -53,7 +53,7 @@ Once Claude Code is running inside this repo, you tell it to read this file and 
 
 Follow these steps in order. Copy-paste the commands exactly. Don't skip anything.
 
-### Step 1: Install WSL2
+### Step 1: Install WSL2 + Ubuntu
 
 WSL2 puts a real Linux (Ubuntu) inside Windows. This is where you'll write code.
 
@@ -68,12 +68,45 @@ wsl --install
 4. After restart, Ubuntu **might** open automatically. If it doesn't, open it yourself:
    - Click the **Start menu**, type `Ubuntu`, and click the **Ubuntu** app
    - If you don't see it, open **Microsoft Store**, search for "Ubuntu", install it, then launch it
+   - **The Ubuntu download is large (~2-6 GB).** This is normal -- it's a full Linux operating system. While it downloads, jump to [Step 1B: While Ubuntu Downloads](#step-1b-while-ubuntu-downloads) below and come back here when it's done.
 5. The first time Ubuntu opens, it asks you to create a username and password.
    - **Username:** pick something short and lowercase, like `don` (no spaces, no capitals)
    - **Password:** pick something you'll remember. When you type it, nothing shows on screen -- that's normal, just type and press Enter.
 6. You're now at a Linux command prompt. It looks like `don@PCNAME:~$`. This is where you'll work.
 
 **Tip:** For future sessions, open **Windows Terminal** (Start menu → type "Terminal"). It has a dropdown arrow next to the `+` tab button -- click it and select **Ubuntu** to get a Linux tab. You can set Ubuntu as the default profile in Terminal settings so it always opens Linux first.
+
+Now skip ahead to [Step 2: Understand the WSL2 File System](#step-2-understand-the-wsl2-file-system).
+
+### Step 1B: While Ubuntu Downloads
+
+Do these while you wait. All of this is in your browser or Windows settings -- no Linux needed.
+
+**1. Sign up for Anthropic (needed for Claude Code login):**
+- Go to **console.anthropic.com** in your browser
+- Click **Sign up** and create an account
+- You'll need this to log in to Claude Code later
+- Optionally, add a payment method and create an API key (go to **API Keys** in the left sidebar, click **Create Key**, and save it somewhere safe -- you'll need it later)
+
+**2. Download Cursor (your code editor):**
+- Go to **cursor.com** in your browser
+- Click **Download** and run the installer
+- Open Cursor after installing -- you can explore it, but we'll configure it for Linux later
+
+**3. Apply Windows tweaks** (open PowerShell as Administrator for these):
+
+Enable long file paths (prevents errors with deeply nested code folders):
+```powershell
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f
+```
+
+Enable Developer Mode (lets git create special file links):
+- Open **Settings** → **Privacy & Security** → **For Developers** → turn on **Developer Mode**
+
+**4. Sign up for Vercel (free, for deploying web apps later):**
+- Go to **vercel.com** → **Sign Up** → sign up with your GitHub account (easiest)
+
+**Once Ubuntu finishes downloading, go back to Step 1, step 5** (creating your Linux username and password).
 
 Run this to update everything and install basic tools:
 
