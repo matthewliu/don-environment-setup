@@ -102,10 +102,11 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled"
 
 Enable Developer Mode (lets git create special file links called symlinks):
 - Click the **Start menu** → click the **gear icon** (Settings)
-- In the left sidebar, click **System**
-- Scroll down and click **For developers**
+- In the **search bar at the top of Settings**, type `Developer Mode`
+- Click the result that says **Developer Mode** or **For developers**
 - Toggle **Developer Mode** to **On**
 - Click **Yes** on the confirmation popup
+- (If you can't find it at all, don't worry -- skip this for now. It only matters for specific projects later, and Claude can help you find it.)
 
 **4. Sign up for Vercel (free, for deploying web apps later):**
 - Go to **vercel.com** in your browser
