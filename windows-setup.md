@@ -104,7 +104,12 @@ Enable Developer Mode (lets git create special file links):
 - Open **Settings** → **Privacy & Security** → **For Developers** → turn on **Developer Mode**
 
 **4. Sign up for Vercel (free, for deploying web apps later):**
-- Go to **vercel.com** → **Sign Up** → sign up with your GitHub account (easiest)
+- Go to **vercel.com** in your browser
+- Click **Sign Up**
+- Choose **Continue with GitHub**
+- GitHub will ask to authorize Vercel -- click **Authorize Vercel**
+- Vercel will ask about a team/plan -- choose **Hobby** (free) and continue
+- You're in. No credit card needed. When you deploy your first app later, Vercel auto-connects to your GitHub repos.
 
 **Once Ubuntu finishes downloading, go back to Step 1, step 5** (creating your Linux username and password).
 
